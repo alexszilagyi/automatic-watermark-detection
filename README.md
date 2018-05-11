@@ -33,12 +33,12 @@ distance in the map.
 - Estimate <a href="https://www.codecogs.com/eqnedit.php?latex=I_k,&space;W_k" target="_blank"><img src="https://latex.codecogs.com/gif.latex?I_k,&space;W_k" title="I_k, W_k" /></a> keeping <a href="https://www.codecogs.com/eqnedit.php?latex=W,&space;\alpha" target="_blank"><img src="https://latex.codecogs.com/gif.latex?W,&space;\alpha" title="W, \alpha" /></a> fixed.
 - Watermark update - Update the value of <a href="https://www.codecogs.com/eqnedit.php?latex=W,&space;\alpha" target="_blank"><img src="https://latex.codecogs.com/gif.latex?W" title="W" /></a> keeping the rest fixed.
 - Matte update - Update the value of <a href="https://www.codecogs.com/eqnedit.php?latex=W,&space;\alpha" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\alpha" title="\alpha" /></a> keeping the rest fixed.
-	
-Please refer to the paper and supplementary for a more in-depth description and derivation of the algorithm. 
+
+Please refer to the paper and supplementary for a more in-depth description and derivation of the algorithm.
 
 Results
 --------
-Here are some of the results for watermarked and watermark removed images: 
+Here are some of the results for watermarked and watermark removed images:
 
 <div align="center">
 <img src="https://github.com/rohitrango/automatic-watermark-detection/blob/master/final/fotolia_137840668.jpg?raw=True" width="45%">
@@ -51,7 +51,23 @@ Here are some of the results for watermarked and watermark removed images:
 <img src="https://github.com/rohitrango/automatic-watermark-detection/blob/master/final/168668150.jpg?raw=True" width="45%"> <br>
 </div>
 
-However, this is a rough implementation and the removal of watermark leaves some "traces" in form of texture distortion or artifacts. I believe this can be corrected by appropriate parameter tuning. 
+However, this is a rough implementation and the removal of watermark leaves some "traces" in form of texture distortion or artifacts. I believe this can be corrected by appropriate parameter tuning.
+
+Running
+-------
+
+```bash
+# Optional: Create a virtual environment.
+python -p python2.7 env
+source env/bin/activate
+
+# Install the dependencies
+pip install -r requirements.txt
+
+# Launch Jupyter
+jupyter-notebook .
+```
+
 
 More information
 -------

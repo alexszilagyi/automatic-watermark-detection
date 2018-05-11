@@ -3,3 +3,4 @@ Dekel_*
 *.pyc
 *.pdf
 *.bmp
+env/

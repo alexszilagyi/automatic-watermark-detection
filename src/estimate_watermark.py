@@ -130,9 +130,9 @@ def poisson_reconstruct(gradx, grady, kernel_size=KERNEL_SIZE, num_iters=100, h=
 
 
 def image_threshold(image, threshold=0.5):
-    '''
+    """
     Threshold the image to make all its elements greater than threshold*MAX = 1
-    '''
+    """
     m, M = np.min(image), np.max(image)
     im = PlotImage(image)
     im[im >= threshold] = 1

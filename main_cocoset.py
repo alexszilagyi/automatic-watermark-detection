@@ -8,9 +8,9 @@ from src.estimate_watermark import PlotImage, watermark_detector, poisson_recons
     estimate_watermark
 from src.watermark_reconstruct import get_cropped_images, estimate_normalized_alpha, estimate_blend_factor, solve_images
 
-'''
+"""
 This main file is for the Microsoft Coco dataset
-'''
+"""
 
 IMAGE_FOLDER = "/media/rohitrango/2EC8DBB2C8DB7715/"
 IMG_LOC = "coco_dataset"
@@ -36,14 +36,14 @@ def bgr2rgb(img):
     return img[:, :, [2, 1, 0]]
 
 
-'''
+"""
 Ground Truth values
 alpha -> coco_dataset/alpha.png
 copyright -> coco_dataset/copyright.png
 c = .45
 
 Experiments: Threshold for estimating initial alpha -> 153, and then subtract 1 from alpha
-'''
+"""
 if __name__ == "__main__":
     # watermark = cv2.imread('coco_dataset/watermark.png')
     # alpha = get_alpha_matte(watermark)

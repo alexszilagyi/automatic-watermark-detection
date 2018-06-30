@@ -1,15 +1,18 @@
-import matplotlib.pyplot as plt
-from scipy.sparse import *
-from scipy.sparse import linalg
+import os
 
-from closed_form_matting import *
-from estimate_watermark import *
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.sparse import linalg, coo_matrix, diags, vstack, hstack
+
+from src.closed_form_matting import closed_form_matte
+from src.estimate_watermark import PlotImage
 
 
 def get_cropped_images(foldername, num_images, start, end, shape):
-    '''
+    """
     This is the part where we get all the images, extract their parts, and then add it to our matrix
-    '''
+    """
     images_cropped = np.zeros((num_images,) + shape)
     # get images
     # Store all the watermarked images
@@ -40,7 +43,6 @@ def get_cropped_images(foldername, num_images, start, end, shape):
 # get sobel coordinates for y
 def _get_ysobel_coord(coord, shape):
     i, j, k = coord
-    m, n, p = shape
     return [
         (i - 1, j, k, -2), (i - 1, j - 1, k, -1), (i - 1, j + 1, k, -1),
         (i + 1, j, k, 2), (i + 1, j - 1, k, 1), (i + 1, j + 1, k, 1)
@@ -50,7 +52,6 @@ def _get_ysobel_coord(coord, shape):
 # get sobel coordinates for x
 def _get_xsobel_coord(coord, shape):
     i, j, k = coord
-    m, n, p = shape
     return [
         (i, j - 1, k, -2), (i - 1, j - 1, k, -1), (i - 1, j + 1, k, -1),
         (i, j + 1, k, 2), (i + 1, j - 1, k, 1), (i + 1, j + 1, k, 1)
@@ -61,7 +62,7 @@ def _get_xsobel_coord(coord, shape):
 def _filter_list_item(coord, shape):
     i, j, k, v = coord
     m, n, p = shape
-    if i >= 0 and i < m and j >= 0 and j < n:
+    if 0 <= i < m and 0 <= j < n:
         return True
 
 
@@ -175,11 +176,11 @@ def Func_Phi_deriv(X, epsilon=1e-3):
 
 
 def solve_images(J, W_m, alpha, W_init, gamma=1, beta=1, lambda_w=0.005, lambda_i=1, lambda_a=0.01, iters=4):
-    '''
+    """
     Master solver, follows the algorithm given in the supplementary.
     W_init: Initial value of W
     Step 1: Image Watermark decomposition
-    '''
+    """
     # prepare variables
     K, m, n, p = J.shape
     size = m * n * p
@@ -283,9 +284,9 @@ def solve_images(J, W_m, alpha, W_init, gamma=1, beta=1, lambda_w=0.005, lambda_
             phi_f = diags(Func_Phi_deriv(((Wm_gx - alphaWk_gx) ** 2 + (Wm_gy - alphaWk_gy) ** 2).reshape(-1)))
 
             phi_kA = diags(
-                ((Func_Phi_deriv((((alpha * Wk[i] + (1 - alpha) * Ik[i] - J[i]) ** 2)))) * ((W - Ik[i]) ** 2)).reshape(
+                ((Func_Phi_deriv(((alpha * Wk[i] + (1 - alpha) * Ik[i] - J[i]) ** 2))) * ((W - Ik[i]) ** 2)).reshape(
                     -1))
-            phi_kB = (((Func_Phi_deriv((((alpha * Wk[i] + (1 - alpha) * Ik[i] - J[i]) ** 2)))) * (W - Ik[i]) * (
+            phi_kB = (((Func_Phi_deriv(((alpha * Wk[i] + (1 - alpha) * Ik[i] - J[i]) ** 2))) * (W - Ik[i]) * (
                     J[i] - Ik[i])).reshape(-1))
 
             phi_alpha = diags(Func_Phi_deriv(alpha_gx ** 2 + alpha_gy ** 2).reshape(-1))
@@ -307,7 +308,7 @@ def solve_images(J, W_m, alpha, W_init, gamma=1, beta=1, lambda_w=0.005, lambda_
         plt.draw()
         plt.pause(0.001)
 
-    return (Wk, Ik, W, alpha)
+    return Wk, Ik, W, alpha
 
 
 def changeContrastImage(J, I):

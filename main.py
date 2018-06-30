@@ -21,11 +21,7 @@ im, start, end = watermark_detector(img, cropped_gx, cropped_gy)
 num_images = len(gxlist)
 
 J, img_paths = get_cropped_images('images/fotolia_processed', num_images, start, end, cropped_gx.shape)
-# get a random subset of J
-idx = [389, 144, 147, 468, 423, 92, 3, 354, 196, 53, 470, 445, 314, 349, 105, 366, 56, 168, 351, 15, 465, 368, 90, 96,
-       202, 54, 295, 137, 17, 79, 214, 413, 454, 305, 187, 4, 458, 330, 290, 73, 220, 118, 125, 180, 247, 243, 257, 194,
-       117, 320, 104, 252, 87, 95, 228, 324, 271, 398, 334, 148, 425, 190, 78, 151, 34, 310, 122, 376, 102, 260]
-idx = idx[:25]
+
 # Wm = (255*PlotImage(W_m))
 Wm = W_m - W_m.min()
 

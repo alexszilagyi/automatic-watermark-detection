@@ -157,9 +157,9 @@ def istock_scrape(directory, topic="abstract", n_images=100):
     # 	th.join()
 
 
-''' 
+""" 
 Main function here
-'''
+"""
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Scrape from stock images')
     parser.add_argument('-f', dest='folder', help='Specify the folder where to place the images.')

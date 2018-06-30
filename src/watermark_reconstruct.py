@@ -9,40 +9,10 @@ from src.closed_form_matting import closed_form_matte
 from src.estimate_watermark import PlotImage
 
 
-def get_cropped_images(foldername, num_images, start, end, shape):
-    """
-    This is the part where we get all the images, extract their parts, and then add it to our matrix
-    """
-    images_cropped = np.zeros((num_images,) + shape)
-    # get images
-    # Store all the watermarked images
-    # start, and end are already stored
-    # just crop and store image
-    image_paths = []
-    _s, _e = start, end
-    index = 0
-
-    # Iterate over all images
-    for r, dirs, files in os.walk(foldername):
-
-        for file in files:
-            _img = cv2.imread(os.sep.join([r, file]))
-            if _img is not None:
-                # estimate the watermark part
-                image_paths.append(os.sep.join([r, file]))
-                _img = _img[_s[0]:(_s[0] + _e[0]), _s[1]:(_s[1] + _e[1]), :]
-                # add to list images
-                images_cropped[index, :, :, :] = _img
-                index += 1
-            else:
-                print("%s not found." % (file))
-
-    return (images_cropped, image_paths)
-
-
 # get sobel coordinates for y
 def _get_ysobel_coord(coord, shape):
     i, j, k = coord
+    m, n, p = shape
     return [
         (i - 1, j, k, -2), (i - 1, j - 1, k, -1), (i - 1, j + 1, k, -1),
         (i + 1, j, k, 2), (i + 1, j - 1, k, 1), (i + 1, j + 1, k, 1)
@@ -52,6 +22,7 @@ def _get_ysobel_coord(coord, shape):
 # get sobel coordinates for x
 def _get_xsobel_coord(coord, shape):
     i, j, k = coord
+    m, n, p = shape
     return [
         (i, j - 1, k, -2), (i - 1, j - 1, k, -1), (i - 1, j + 1, k, -1),
         (i, j + 1, k, 2), (i + 1, j - 1, k, 1), (i + 1, j + 1, k, 1)
@@ -132,7 +103,7 @@ def estimate_normalized_alpha(J, W_m, num_images=30, threshold=170, invert=False
 
     print("Estimating normalized alpha using %d images." % (num_images))
     # for all images, calculate alpha
-    for idx in xrange(num_images):
+    for idx in range(num_images):
         imgcopy = thr
         alph = closed_form_matte(J[idx], imgcopy)
         alpha[idx] = alph
@@ -147,7 +118,7 @@ def estimate_blend_factor(J, W_m, alph, threshold=0.01 * 255):
     gx_jm = np.zeros(J.shape)
     gy_jm = np.zeros(J.shape)
 
-    for i in xrange(K):
+    for i in range(K):
         gx_jm[i] = cv2.Sobel(Jm[i], cv2.CV_64F, 1, 0, 3)
         gy_jm[i] = cv2.Sobel(Jm[i], cv2.CV_64F, 0, 1, 3)
 
@@ -159,7 +130,7 @@ def estimate_blend_factor(J, W_m, alph, threshold=0.01 * 255):
     estIk_grad = np.sqrt(gx_estIk ** 2 + gy_estIk ** 2)
 
     C = []
-    for i in xrange(3):
+    for i in range(3):
         c_i = np.sum(Jm_grad[:, :, :, i] * estIk_grad[:, :, i]) / np.sum(np.square(estIk_grad[:, :, i])) / K
         print(c_i)
         C.append(c_i)
@@ -189,7 +160,7 @@ def solve_images(J, W_m, alpha, W_init, gamma=1, beta=1, lambda_w=0.005, lambda_
     sobely = get_ySobel_matrix(m, n, p)
     Ik = np.zeros(J.shape)
     Wk = np.zeros(J.shape)
-    for i in xrange(K):
+    for i in range(K):
         Ik[i] = J[i] - W_m
         Wk[i] = W_init.copy()
 
@@ -197,7 +168,7 @@ def solve_images(J, W_m, alpha, W_init, gamma=1, beta=1, lambda_w=0.005, lambda_
     W = W_init.copy()
 
     # Iterations
-    for _ in xrange(iters):
+    for _ in range(iters):
 
         print("------------------------------------")
         print("Iteration: %d" % (_))
@@ -216,7 +187,7 @@ def solve_images(J, W_m, alpha, W_init, gamma=1, beta=1, lambda_w=0.005, lambda_
         alpha_diag = diags(alpha.reshape(-1))
         alpha_bar_diag = diags((1 - alpha).reshape(-1))
 
-        for i in xrange(K):
+        for i in range(K):
             # prep vars
             Wkx = cv2.Sobel(Wk[i], cv2.CV_64F, 1, 0, 3)
             Wky = cv2.Sobel(Wk[i], cv2.CV_64F, 0, 1, 3)

@@ -1,18 +1,13 @@
 import cv2
 import numpy as np
 
-from src.estimate_watermark import estimate_watermark, poisson_reconstruct, watermark_detector
+from src.estimate_watermark import estimate_watermark, poisson_reconstruct, watermark_detector, crop_watermark
 from src.watermark_reconstruct import get_cropped_images, estimate_normalized_alpha, estimate_blend_factor, solve_images
 
 gx, gy, gxlist, gylist = estimate_watermark('images/fotolia_processed')
 
 # est = poisson_reconstruct(gx, gy, np.zeros(gx.shape)[:,:,0])
-# cropped_gx, cropped_gy = crop_watermark(gx, gy)
-
-with open('cropped.npz', 'rb') as f:
-    npzfile = np.load(f)
-    cropped_gx, cropped_gy = npzfile['cropped_gx'], npzfile['cropped_gy']
-
+cropped_gx, cropped_gy = crop_watermark(gx, gy)
 W_m = poisson_reconstruct(cropped_gx, cropped_gy)
 
 # random photo

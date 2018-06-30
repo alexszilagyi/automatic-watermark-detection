@@ -5,4 +5,4 @@ Dekel_*
 *.bmp
 env/
 .DS_Store
-cropped.npz
+.idea

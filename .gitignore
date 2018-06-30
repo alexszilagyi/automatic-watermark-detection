@@ -4,3 +4,5 @@ Dekel_*
 *.pdf
 *.bmp
 env/
+.DS_Store
+cropped.npz

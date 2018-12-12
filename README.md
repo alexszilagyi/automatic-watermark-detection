@@ -62,7 +62,7 @@ python -p python2.7 env
 source env/bin/activate
 
 # Install the dependencies
-pip install -r requirements.txt
+pip install -r req.txt
 
 # Launch Jupyter
 jupyter-notebook .

@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.sparse import linalg, coo_matrix, diags, vstack, hstack
 
-from src.closed_form_matting import closed_form_matte
-from src.estimate_watermark import PlotImage
+from closed_form_matting import closed_form_matte
+from estimate_watermark import PlotImage
 
 
 # get sobel coordinates for y

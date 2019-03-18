@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.sparse import linalg, coo_matrix, diags, vstack, hstack
 
-from closed_form_matting import closed_form_matte
-from estimate_watermark import PlotImage
+from src.closed_form_matting import closed_form_matte
+from src.estimate_watermark import PlotImage
 
 
 # get sobel coordinates for y
@@ -110,6 +110,7 @@ def estimate_normalized_alpha(J, W_m, num_images=30, threshold=170, invert=False
 
     alpha = np.median(alpha, axis=0)
     return alpha
+
 
 
 def estimate_blend_factor(J, W_m, alph, threshold=0.01 * 255):

@@ -13,39 +13,42 @@ import matplotlib.pyplot as plt
 
 import tensorflow as tf
 
-from estimate_watermark import *
-from watermark_reconstruct import *
+from src.estimate_watermark import *
+from src.watermark_reconstruct import *
 
 from constants import constants
 
-FOLDERNAME = 'D:/Images/TL;DR/BumbleBee/1_RW/25.3/'
+##
+# 1. Reading Images In
+##
 
-# assert os.path.exists(FOLDERNAME), "Folder does not exist."
+FOLDERNAME = './images/fotolia_processed'
 
-original = []
+assert os.path.exists(FOLDERNAME), "Folder does not exist."
+
 images = []
 for r, dirs, files in os.walk(FOLDERNAME):
     # Get all the images
     for file in files:
         img = cv2.imread(os.sep.join([r, file]))
         if img is not None:
-            
+            images.append(img)
             height, width = img.shape[:2]
-            watermarkSection = img[(height-constants.wmY):height, (width-constants.wmX):width]
-            images.append(watermarkSection)
-            original.append(img)
         else:
             print("%s not found." % (file))
 images = np.array(images)
-# images.shape
+images.shape
 
+##
+# 2. Inital Watermark Detection
+##
 
 gx, gy = estimate_watermark(images)
 
 est = poisson_reconstruct(gx, gy)
 
-gx_manual_crop = gx
-gy_manual_crop = gy
+gx_manual_crop = gx[(height-constants.wmY):height, (width-constants.wmX):width]
+gy_manual_crop = gy[(height-constants.wmY):height, (width-constants.wmX):width]
 est_manual_crop = poisson_reconstruct(gx_manual_crop, gy_manual_crop)
 
 cropped_gx, cropped_gy = crop_watermark(gx_manual_crop, gy_manual_crop)
@@ -54,20 +57,21 @@ est_auto_crop = poisson_reconstruct(cropped_gx, cropped_gy)
 with open('cropped.npz', 'wb') as f:
     np.savez(f, cropped_gx=cropped_gx, cropped_gy=cropped_gy)
 
-
-img = cv2.imread('D:/Images/TL;DR/BumbleBee/1_RW/25.3/25_3_001.jpg')
+img = cv2.imread('images/fotolia_processed/25_3_018.jpg')
 start, rect = watermark_detector(img, cropped_gx, cropped_gy)
 
 im = img.copy()
 cv2.rectangle(im, (start[1], start[0]), (start[1] + rect[1], start[0] + rect[0]), (255, 0, 0))
 
-plt.figure(figsize=(12, 12), dpi= 80, facecolor='w', edgecolor='k')
-plt.imshow(im)
-plt.show()
+#plt.figure(figsize=(12, 12), dpi= 80, facecolor='w', edgecolor='k')
+#plt.imshow(im)
+#plt.show()
 
-# images_cropped = images[:, start[0]:start[0] + rect[0], start[1]:start[1] + rect[1]]
-images_cropped = images
+images_cropped = images[:, start[0]:start[0] + rect[0], start[1]:start[1] + rect[1]]
 
+##
+# 3. Multi-Image Matting and Reconstruction
+##
 
 # Print some random indices extracted
 N = 4
@@ -84,7 +88,7 @@ W_m = est_auto_crop
 Wm = W_m - W_m.min()
 
 # get threshold of W_m for alpha matte estimate
-alph_est = estimate_normalized_alpha(J, Wm)
+alph_est = estimate_normalized_alpha(J, Wm, num_images=110)
 alph = np.stack([alph_est, alph_est, alph_est], axis=2)
 C, est_Ik = estimate_blend_factor(J, Wm, alph)
 
@@ -99,7 +103,7 @@ for i in range(3):
     W[:, :, i] /= C[i]
 
 
-img = cv2.imread('images/fotolia_processed/fotolia_137840787.jpg')[None]
+img = cv2.imread('images/fotolia_processed/25_3_018.jpg')[None]
 Jt = img[:, start[0]:start[0] + rect[0], start[1]:start[1] + rect[1]]
 
 

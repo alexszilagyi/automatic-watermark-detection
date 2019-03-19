@@ -18,6 +18,7 @@ from src.watermark_reconstruct import *
 
 from constants import constants
 
+from time import sleep
 ##
 # 1. Reading Images In
 ##
@@ -69,6 +70,15 @@ cv2.rectangle(im, (start[1], start[0]), (start[1] + rect[1], start[0] + rect[0])
 
 images_cropped = images[:, start[0]:start[0] + rect[0], start[1]:start[1] + rect[1]]
 
+# Display watermark guesses
+#plt.figure()
+#for i in range(0,100):
+#    plt.imshow(images_cropped[i])
+#    plt.show()
+#    sleep(1)
+
+# CHECKED
+
 ##
 # 3. Multi-Image Matting and Reconstruction
 ##
@@ -79,6 +89,7 @@ random_indices = np.random.randint(images_cropped.shape[0], size=(N*N,))
 fig, axes = plt.subplots(N, N, figsize=(12, 8))
 for i, val in enumerate(random_indices):
     axes[i//N, i%N].imshow(images_cropped[val])
+
 
 
 J = images_cropped
